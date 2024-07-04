@@ -37,7 +37,7 @@ body {
     gap: 10px; /* Space between items */
     position: absolute;
     left: 20px; /* Align to the right */
-    max-width: 30%;
+    max-width: 10%;
 }
 
 .navbar ul li {
