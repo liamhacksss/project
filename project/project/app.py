@@ -351,4 +351,4 @@ if __name__ == '__main__':
             initial_profit = Profit(amount=0.0)
             db.session.add(initial_profit)
             db.session.commit()
-    app.run(host='0.0.0.0', port=443, ssl_context=('ssl_cert/your_domain.crt', 'ssl_cert/your_domain.key'))
+    app.run(host='0.0.0.0', port=443, ssl_context=('your_domain.crt', 'your_domain.key'))
