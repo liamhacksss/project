@@ -25,9 +25,9 @@ login_manager.login_view = 'login'
 
 # PayPal configuration
 paypalrestsdk.configure({
-    'mode': 'sandbox',  # Use 'sandbox' for testing, 'live' for production
-    'client_id': 'AUK1X_-2S_gm1mwohAwLEY8cDa-JNJzn2d5dkq_dt6De_Q3UJSbhIA_PNMB8OX6TLef7FD3OJX28yNOc',  # Replace with your PayPal client ID
-    'client_secret': 'EFekxbGHs2Q0DRuiTcOf6iKExsXeihhaTXW64X39EGXF2hM2oL-etsdql10-HHtrSNjLTWknOTlqTs8B'  # Replace with your PayPal client secret
+    'mode': 'live',  # Use 'sandbox' for testing, 'live' for production
+    'client_id': 'AZduRR0pGWaYTt3VhlVzsFtS-Y8MGjkZxOq4_v4roNvHv0BYQG2qHrysOeWjDykkaeiyLTBxGy1omhBg',  # Replace with your PayPal client ID
+    'client_secret': 'ELt6QJAh3Cdmt-iAIyKI4AGxUPOo3VM8LQP8MYjP_41NrEfB1qAFOdV_7HHaRLEfibx3JCeL7taVFYmC'  # Replace with your PayPal client secret
 })
 
 # User model
