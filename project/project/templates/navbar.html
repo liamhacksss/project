@@ -1,14 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Navbar</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    /* Custom styles */
+    .navbar-logo img {
+      max-height: 50px;
+    }
+
+    /* Dropdown styles for mobile */
+    @media (max-width: 768px) {
+      .navbar-nav {
+        display: none; /* Hide navbar links on mobile */
+      }
+
+      .navbar .dropdown-menu {
+        display: block; /* Show dropdown on mobile */
+      }
+
+      .dropdown-toggle::after {
+        content: ''; /* Remove caret */
+      }
+    }
+
+    /* Show navbar links on larger screens */
+    @media (min-width: 769px) {
+      .navbar .dropdown-menu {
+        display: none; /* Hide dropdown on larger screens */
+      }
+    }
+  </style>
 </head>
+<body>
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand" href="/">
     <img src="{{ url_for('static', filename='logo.png') }}" alt="InI Logo" class="navbar-logo">
   </a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <div class="collapse navbar-collapse" id="navbarNav">
+
+  <div class="collapse navbar-collapse" id="navbarNavDropdown">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
       {% if not user.is_authenticated %}
@@ -34,7 +70,34 @@
     </div>
     {% endif %}
   </div>
+
+  <!-- Dropdown for mobile -->
+  <div class="dropdown d-lg-none">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Menu
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <a class="dropdown-item" href="/">Home</a>
+      {% if not user.is_authenticated %}
+        <a class="dropdown-item" href="/login">Sign In</a>
+        <a class="dropdown-item" href="/register">Register</a>
+        <a class="dropdown-item" href="/gmes">G@mes Av@ilable</a>
+      {% endif %}
+      {% if user.is_authenticated %}
+        <a class="dropdown-item" href="/dashboard">Dashboard</a>
+        <a class="dropdown-item" href="/logout">Logout</a>
+        <a class="dropdown-item" href="/gmesCards">Pl@y G@mes</a>
+        {% if current_user.username == 'admin' %}
+          <a class="dropdown-item" href="/admin_dashboard">Admin</a>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
 </nav>
+
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
