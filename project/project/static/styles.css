@@ -7,6 +7,44 @@ body {
     color: #add8e6;
 }
 
+/* Add this to the existing CSS */
+
+/* Styles for the dropdown button */
+.dropdown-btn {
+  display: none;
+  background-color: #383838;
+  color: #add8e6;
+  border: none;
+  padding: 14px 16px;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .navbar ul {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    background-color: #383838;
+  }
+
+  .navbar ul li {
+    width: 100%;
+  }
+
+  .dropdown-btn {
+    display: block;
+  }
+}
+
 /* Navbar styles */
 .navbar {
     background-color: #383838;
