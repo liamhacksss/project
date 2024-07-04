@@ -16,7 +16,7 @@ body {
     justify-content: center; /* Center all items */
     align-items: center;
     position: relative; /* Use relative positioning */
-    padding: 10px 20px; /* Adjust padding as needed */
+    padding: 0px 20px; /* Adjust padding as needed */
 }
 
 .navbar-logo {
