@@ -1,7 +1,6 @@
-<!-- project/templates/navbar.html -->
 <nav class="navbar">
-  
-  <ul>
+  <button class="dropdown-btn" onclick="toggleDropdown()">Menu</button>
+  <ul id="navbar-menu">
     <li><a href="/">Home</a></li>
     {% if not user.is_authenticated %}
       <li><a href="/login">Sign In</a></li>
@@ -14,29 +13,31 @@
       <li><a href="/gmesCards">Pl@y G@mes</a></li>
       {% if current_user.username == 'admin' %}
         <li><a href="/admin_dashboard">Admin</a></li>
-      {% endif %}{% endif %}
-    </ul>
-    <div class="navbar-logo">
-      <a href="/">
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="InI Logo">
-      </a>
-    </div>
-    {% if user.is_authenticated %}
-    <div class="user-info">
-      <a href="/dashboard">
-        <span>Welcome: '{{ user.first_name }}'</span>
-        <span>Balance: ${{ user.balance }}</span>
-      </a>
-    </div>
+      {% endif %}
     {% endif %}
+  </ul>
+  <div class="navbar-logo">
+    <a href="/">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="InI Logo">
+    </a>
+  </div>
+  {% if user.is_authenticated %}
+  <div class="user-info">
+    <a href="/dashboard">
+      <span>Welcome: '{{ user.first_name }}'</span>
+      <span>Balance: ${{ user.balance }}</span>
+    </a>
+  </div>
+  {% endif %}
 </nav>
+
 <script>
   function toggleDropdown() {
     var menu = document.getElementById('navbar-menu');
-    if (menu.style.display === 'block') {
-      menu.style.display = 'none';
+    if (menu.classList.contains('open')) {
+      menu.classList.remove('open');
     } else {
-      menu.style.display = 'block';
+      menu.classList.add('open');
     }
   }
 </script>
