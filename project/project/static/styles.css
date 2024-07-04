@@ -10,7 +10,7 @@ body {
 /* Navbar styles */
 .navbar {
     background-color: #383838;
-    overflow: auto;
+    overflow: hidden;
     height: 100px;
     display: flex;
     justify-content: center; /* Center all items */
@@ -94,6 +94,7 @@ body {
 
     .navbar ul.open {
         display: flex;
+        overflow:hidden;
     }
 
     .navbar ul li {
