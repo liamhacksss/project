@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Withdraw</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <style>
+    /* Styles for the popup notification */
+    .popup {
+        visibility: hidden;
+        min-width: 250px;
+        margin-left: -125px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 2px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1;
+        left: 50%;
+        bottom: 30px;
+        font-size: 17px;
+    }
+
+    .popup.show {
+        visibility: visible;
+        -webkit-animation: fadein 0.5s, fadeout 0.5s 4.5s;
+        animation: fadein 0.5s, fadeout 0.5s 4.5s;
+    }
+
+    @-webkit-keyframes fadein {
+        from {bottom: 0; opacity: 0;}
+        to {bottom: 30px; opacity: 1;}
+    }
+
+    @keyframes fadein {
+        from {bottom: 0; opacity: 0;}
+        to {bottom: 30px; opacity: 1;}
+    }
+
+    @-webkit-keyframes fadeout {
+        from {bottom: 30px; opacity: 1;}
+        to {bottom: 0; opacity: 0;}
+    }
+
+    @keyframes fadeout {
+        from {bottom: 30px; opacity: 1;}
+        to {bottom: 0; opacity: 0;}
+    }
+  </style>
+</head>
+<body>
+  {% include 'navbar.html' %}
+  <div class="container">
+    <h1>Withdraw</h1>
+    <form action="{{ url_for('withdraw') }}" method="post">
+        <label for="amount">Amount:</label>
+        <input type="number" name="amount" id="amount" required>
+        <br>
+        <button type="submit">Withdraw Money</button>
+    </form>
+  </div>
+
+  <!-- Hidden Input for Success Message -->
+  <input type="hidden" id="success_message" value="{{ success_message }}">
+
+  <!-- Popup Notification -->
+  <div id="popup" class="popup">Success!</div>
+
+  <script>
+    function showPopup(message) {
+        var popup = document.getElementById("popup");
+        popup.textContent = message;
+        popup.className = "popup show";
+        setTimeout(function() { popup.className = popup.className.replace("show", ""); }, 5000);
+    }
+    // Check for success message
+    var successMessage = document.getElementById("success_message").value;
+    if (successMessage) {
+        showPopup(successMessage);
+    }
+  </script>
+</body>
+</html>

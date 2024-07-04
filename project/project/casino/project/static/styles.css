@@ -1,0 +1,238 @@
+/* General styles */
+body {
+    font-family: 'Courier New', Courier, monospace;
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    color: #add8e6;
+}
+
+/* Navbar styles */
+nav {
+    background-color: #383838;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+nav ul li {
+    margin-right: 10px;
+}
+
+nav ul li a {
+    display: block;
+    color: #add8e6;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    margin-top: 0px;
+}
+
+nav ul li a:hover {
+    background-color: #add8e6;
+    color: #000;
+}
+
+/* Content styles */
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #383838;
+    border: 3px solid #add8e6;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+h1 {
+    color: #add8e6;
+    text-align: center;
+    margin-top: 50px;
+}
+
+form {
+    margin-top: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    color: #add8e6;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"], 
+input[type="number"]{
+    width: 97%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #add8e6;
+    border-radius: 5px;
+    margin-right: 50px;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #000;
+    color: #add8e6;
+}
+
+button[type="submit"] {
+    background-color: #add8e6;
+    color: #000;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #000;
+    color: #add8e6;
+    border: 1px solid #add8e6;
+}
+
+a {
+    color: #add8e6;
+    text-decoration: none;
+    margin-top: 20px;
+}
+
+.user-info {
+    color: #add8e6;
+    margin-right: 10px;
+}
+
+button {
+    background-color: #add8e6;
+    color: #000;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #000;
+    color: #add8e6;
+    border: 1px solid #add8e6;
+}
+
+.user-info span{
+    margin-right: 10px;
+}
+
+button a{
+    color: #000;
+}
+
+/* Additional styles for Available Games page */
+.game-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.game-item {
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #add8e6;
+    color: #000;
+    border-radius: 5px;
+    text-align: center;
+}
+
+/* Additional styles for Game Cards page */
+.card {
+    display: inline-block;
+    width: 30%;
+    margin: 10px;
+    padding: 20px;
+    background-color: #add8e6;
+    color: #000;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.card:hover {
+    background-color: #000;
+    color: #add8e6;
+}
+
+
+body {
+    background-color: #000;
+    font-family: 'Courier New', Courier, monospace;
+    color: #add8e6;
+}
+
+.container {
+    margin-top: 50px;
+}
+
+.canvas-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+canvas {
+    border: 3px solid #add8e6;
+    background-color: #000;
+    border-radius: 10px;
+}
+
+.control-panel {
+    text-align: center;
+}
+
+.btn-custom {
+    background-color: #add8e6;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.btn-custom:hover {
+    background-color: #000;
+    color: #add8e6;
+    border: 1px solid #add8e6;
+}
+
+.label {
+    font-weight: bold;
+}
+
+.balance-display {
+    font-size: 1.2em;
+    margin-top: 10px;
+}
+
+.alert {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.alert-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.alert-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G@me Cards</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='logo.png') }}" type="image/x-icon">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h1>G@me Cards</h1>
+        <div class="card" onclick="location.href='/plinko'">
+            <h2>Plinko Ball</h2>
+            <p>Try your luck with Plinko Ball! Drop the ball and win prizes based on where it lands.</p>
+            <p>Your bet will be multiplied by the multiplyer of the bucket your ball lands in. E.g. if your bet is $1 and the multiplyer is 1.5, you will win $1.5.</p>
+        </div>
+        <div class="card" onclick="location.href='/cardgme'">
+            <h2>Cards</h2>
+            <p>Compete against the dealer and win card scores.</p>
+            <p>How to play: Hit means take another card, the closer your score is to 21 the riskier. Stand means no more cards and your dealer will turn over their hidden card and play their end for you. All you really need to look for is if you won at that point!</p>
+        </div>
+        <!-- Add other game cards here -->
+    </div>
+</body>
+</html>

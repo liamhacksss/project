@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <style>
+    #back{
+      background-color:black;
+      color:#add8e6;
+    }
+  </style>
+  <link rel="icon" href="{{ url_for('static', filename='logo.png') }}" type="image/x-icon">
+</head>
+<body>
+  {% include 'navbar.html' %}
+  <div class="container">
+    <h1>Welcome, {{ user.first_name }}</h1>
+    <div class="user-inf">
+      <p>Username: {{ user.username }}</p>
+      <p>PayPal Email: {{ user.paypal_email }}</p>
+    </div>
+    <button class="toggle-buttons" onclick="showUpdateOptions()">Update Details</button>
+    <div id="update-options" class="hidden">
+      <button onclick="showForm('update-paypal')">Update PayPal Email</button>
+      <button onclick="showForm('update-username')">Update Username</button>
+      <button onclick="showForm('update-password')">Update Password</button>
+      <button id='back' type="button" onclick="resetPage()">Back</button>
+    </div>
+    <div id="update-paypal" class="hidden">
+      <form action="{{ url_for('update_paypal') }}" method="post">
+        <label for="paypal_email">New PayPal Email:</label>
+        <input type="email" id="paypal_email" name="paypal_email" required>
+        <button type="submit">Update</button>
+        <button type="button" onclick="resetPage()">Back</button>
+      </form>
+    </div>
+    <div id="update-username" class="hidden">
+      <form action="{{ url_for('update_username') }}" method="post">
+        <label for="username">New Username:</label>
+        <input type="text" id="username" name="username" required>
+        <button type="submit">Update</button>
+        <button type="button" onclick="resetPage()">Back</button>
+      </form>
+    </div>
+    <div id="update-password" class="hidden">
+      <form action="{{ url_for('update_password') }}" method="post">
+        <label for="password">New Password:</label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit">Update</button>
+        <button type="button" onclick="resetPage()">Back</button>
+      </form>
+    </div>
+    <div class="button-container toggle-buttons">
+      <a href="{{ url_for('add_money') }}"><button>Add Money</button></a>
+      <a href="{{ url_for('withdraw') }}"><button>Withdraw Money</button></a>
+      <a href="{{ url_for('games') }}"><button>G@mes</button></a>
+      <a href="{{ url_for('logout') }}"><button>Logout</button></a>
+    </div>
+  </div>
+</body>
+</html>

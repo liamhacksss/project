@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bl@ckjack G@me</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .card-container {
+            display: flex;
+            gap: 5px; /* Adjust as needed for spacing between cards */
+        }
+    
+        .cards {
+            width: 90px; /* Adjust card width */
+            height: 160px; /* Adjust card height */
+            background-size: cover; /* Cover ensures the entire card is filled */
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative; /* Position relative for animation */
+            transition: transform 0.3s ease-in-out; /* Smooth animation for card flip */
+            border-radius: 5px;
+            display: inline-block;
+            padding: 20px;
+            background-color: #383838;
+            color: #000;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+    
+        .card-hidden {
+            background-image: url('/static/cards/gray_back.png'); /* Set gray back image initially */
+        }
+    
+        .card-revealed {
+            /* This will be dynamically updated with actual card image */
+        }
+    
+        @keyframes dealAnimation {
+            0% {
+                transform: translateY(-200px) rotate(360deg); /* Starting position */
+                opacity: 0; /* Initially invisible */
+            }
+            100% {
+                transform: translateY(0) rotate(0deg); /* End position */
+                opacity: 1; /* Fully visible */
+            }
+        }
+    
+        @keyframes revealAnimation {
+            0% {
+                transform: translateY(200px) rotate(-360deg); /* Starting position */
+                opacity: 0; /* Initially invisible */
+            }
+            100% {
+                transform: translateY(0) rotate(0deg); /* End position */
+                opacity: 1; /* Fully visible */
+            }
+        }
+    </style>
+    <link rel="icon" href="{{ url_for('static', filename='logo.png') }}" type="image/x-icon">
+    
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="container">
+        <div id="gameArea">
+            <div id="playerArea">
+                <h2>Your Hand</h2>
+                <div id="playerHand" class="card-container"></div>
+                <p id="playerScore">Score: </p>
+            </div>
+            <div id="dealerArea">
+                <h2>Dealer's Hand</h2>
+                <div id="dealerHand" class="card-container">
+                    <!-- Cards will be dynamically added here -->
+                </div>
+                <p id="dealerScore" style="display: none;">Score: </p>
+            </div>
+            
+            <div id="actionButtons">
+                <div id="betInputArea">
+                    <label for="betAmount">Enter Bet Amount:</label>
+                    <input type="number" id="betAmount" name="betAmount" min="1" max="100" value="1">
+                    <button id="placeBetBtn" class="btn-custom" onclick="placeBet()">Place Bet</button>
+                </div>
+                <button id="dealBtn" class="btn-custom" style="display: none;" onclick="dealCards()">Deal</button>
+                <button id="hitBtn" class="btn-custom" style="display: none;" onclick="hit()">Hit</button>
+                <button id="standBtn" class="btn-custom" style="display: none;" onclick="stand()">Stand</button>
+            </div>
+            <div id="messageArea">
+                <p id="message"></p>
+                <p class="balance-display">Current Balance: $<span id="balance">{{ user.balance }}</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        const balanceSpan = document.getElementById('balance');
+        let userBalance = parseFloat(balanceSpan.textContent);
+        var betAmount = 0;
+        var profit = 0;
+        var playerHand = [];
+        var dealerHand = [];
+        var playerScore = 0;
+        var dealerScore = 0;
+    
+        function fetchUserBalance() {
+            fetch('/get_balance')
+                .then(response => response.json())
+                .then(data => {
+                    userBalance = data.balance;
+                    updateBalanceUI();
+                })
+                .catch(error => console.error('Error fetching balance:', error));
+        }
+    
+        var cardNames = {
+            1: "A",
+            2: "2",
+            3: "3",
+            4: "4",
+            5: "5",
+            6: "6",
+            7: "7",
+            8: "8",
+            9: "9",
+            10: "10",
+            11: "J",
+            12: "Q",
+            13: "K"
+        };
+    
+        var cardSuits = ['C', 'D', 'H', 'S'];
+    
+        function placeBet() {
+            betAmount = parseInt(document.getElementById("betAmount").value);
+    
+            if (betAmount > userBalance) {
+                alert("Insufficient balance!");
+                return;
+            }
+    
+            userBalance -= betAmount;
+            updateBalanceUI();
+    
+            document.getElementById("betInputArea").style.display = "none";
+            document.getElementById("dealBtn").style.display = "inline-block";
+        }
+    
+        function dealCards() {
+            playerHand = [];
+            dealerHand = [];
+            playerScore = 0;
+            dealerScore = 0;
+    
+            dealCard(playerHand, "playerHand");
+            dealCard(dealerHand, "dealerHand", true);
+            dealCard(playerHand, "playerHand");
+            dealCard(dealerHand, "dealerHand");
+    
+            calculateScores();
+    
+            document.getElementById("playerScore").textContent = "Score: " + playerScore;
+            document.getElementById("hitBtn").style.display = "inline-block";
+            document.getElementById("standBtn").style.display = "inline-block";
+            document.getElementById("dealBtn").style.display = "none";
+        }
+    
+        function dealCard(hand, handElementId, hideFirstCard = false) {
+        var cardValue = Math.floor(Math.random() * 13) + 1;
+        var cardSuit = cardSuits[Math.floor(Math.random() * 4)];
+        hand.push({ value: cardValue, suit: cardSuit });
+
+        var cardElement = document.createElement("div");
+        cardElement.classList.add("cards", "card-hidden"); // Initially hidden
+
+        if (!hideFirstCard || hand.length > 1) {
+            cardElement.classList.remove("card-hidden");
+            cardElement.classList.add("card-revealed");
+            cardElement.style.backgroundImage = `url('/static/cards/${getCardFileName(cardValue)}${cardSuit}.png')`;
+        }
+
+        document.getElementById(handElementId).appendChild(cardElement);
+
+        // Trigger animation for dealing the card
+        cardElement.style.animation = "dealAnimation 0.5s forwards";
+    }
+
+    
+        function getCardFileName(cardValue) {
+            // Use cardNames to get the correct card name abbreviation (A, 2-10, J, Q, K)
+            return cardNames[cardValue];
+        }
+    
+        function calculateScores() {
+            playerScore = calculateScore(playerHand);
+            dealerScore = calculateScore(dealerHand);
+        }
+    
+        function calculateScore(hand) {
+    var score = 0;
+    var hasAce = false;
+
+    for (var i = 0; i < hand.length; i++) {
+        if (hand[i].value === 1) {
+            hasAce = true;
+        }
+        score += getCardValue(hand[i].value);
+    }
+
+    if (hasAce && score + 10 <= 21) {
+        score += 10;
+    }
+
+    return score;
+}
+    
+function getCardValue(cardValue) {
+    if (cardValue >= 11 && cardValue <= 13) {
+        return 10; // Jack, Queen, King are worth 10
+    } else {
+        return cardValue;
+    }
+}
+    
+        function hit() {
+            dealCard(playerHand, "playerHand");
+            calculateScores();
+            document.getElementById("playerScore").textContent = "Score: " + playerScore;
+    
+            if (playerScore > 21) {
+                document.getElementById("message").textContent = "You bust! Dealer wins.";
+                endRound();
+            }
+        }
+    
+        function stand() {
+            while (dealerScore < 17) {
+                dealCard(dealerHand, "dealerHand");
+                calculateScores();
+                document.getElementById("dealerScore").textContent = "Score: " + dealerScore;
+            }
+    
+            revealHiddenCard(); // Reveal the hidden card after dealer stands
+    
+            endRound(); // End the round after revealing the hidden card
+        }
+    
+        function revealHiddenCard() {
+        var hiddenCardElement = document.querySelector('#dealerHand .cards.card-hidden');
+        if (hiddenCardElement) {
+            hiddenCardElement.classList.remove("card-hidden");
+            hiddenCardElement.classList.add("card-revealed");
+            hiddenCardElement.style.backgroundImage = `url('/static/cards/${getCardFileName(dealerHand[0].value)}${dealerHand[0].suit}.png')`;
+
+            // Trigger animation for revealing the hidden card
+            hiddenCardElement.style.animation = "revealAnimation 0.5s forwards";
+        }
+    }
+
+    
+        function endRound() {
+            var message = "";
+            var winnings = 0;
+
+            if (dealerScore > 21) {
+                message = `Dealer busts! You win $${(betAmount * 1.5).toFixed(2)}.`;
+                winnings = betAmount * 1.5;
+                userBalance += winnings;
+            } else {
+                if (playerScore <= 21) {
+                    if (playerScore > dealerScore) {
+                        message = `You win $${(betAmount * 1.5).toFixed(2)}!`;
+                        winnings = betAmount * 1.5;
+                        userBalance += winnings;
+                    } else if (playerScore < dealerScore) {
+                        message = `Dealer wins! You lose $${betAmount.toFixed(2)}.`;
+                        winnings -= betAmount
+                    } else {
+                        message = "It's a tie!";
+                        userBalance += betAmount;
+                    }
+                } else {
+                    message = `You bust! You lose $${betAmount.toFixed(2)}.`;
+                    winnings -= betAmount
+                }
+                updateProfit(winnings);
+            }
+
+
+            function updateProfit(amount) {
+    fetch('/update_profit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ amount: amount })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            console.error('Failed to update profit:', data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+
+
+            updateBalanceUI();
+            document.getElementById("message").textContent = message;
+            document.getElementById("hitBtn").style.display = "none";
+            document.getElementById("standBtn").style.display = "none";
+            document.getElementById("dealBtn").style.display = "none";
+
+            // Reload the page after a short delay (3 seconds)
+            setTimeout(function() {
+                location.reload();
+            }, 3000); // 3000 milliseconds = 3 seconds
+        }
+    
+        function updateBalanceUI() {
+            balanceSpan.textContent = userBalance.toFixed(2);
+    
+            fetch('/update_balance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ new_balance: userBalance })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    console.error('Failed to update balance:', data.message);
+                }
+            })
+            .catch(error => console.error('Error updating balance:', error));
+        }
+    
+        window.onload = function() {
+            fetchUserBalance();
+        };
+    </script>    
+</body>
+</html>

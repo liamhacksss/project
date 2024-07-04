@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='logo.png') }}" type="image/x-icon">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <header>
+        <h1>Admin Dashboard</h1>
+    </header>
+    
+    <div class="container">
+        <div class="card" onclick="location.href='/profit'">
+            <h2>Profits</h2>
+        </div>
+</body>
+</html>

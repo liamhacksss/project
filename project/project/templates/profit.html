@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='logo.png') }}" type="image/x-icon">
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="container">
+        <h1>Welcome, {{ user.first_name }}!</h1>
+        <h2>Profit Data</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for profit in profits %}
+                <tr>
+                    <td>{{ profit.amount }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <button id="resetProfitBtn" class="btn-custom" onclick="resetProfit()">Reset Profit to 0</button>
+        <div id="alert-container"></div>
+    </div>
+
+    <script>
+        function resetProfit() {
+            const confirmation = confirm("Are you sure you want to reset profit to 0?");
+            if (confirmation) {
+                updateProfit(0);
+            }
+        }
+
+        function updateProfit(amount) {
+            fetch('/update_profit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ amount: amount })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('Profit reset to 0.', 'success');
+                    setTimeout(() => {
+                        window.location.reload(); // Reload the page after 1 second
+                    }, 1000); // Adjust delay as needed
+                } else {
+                    showAlert('Failed to reset profit.', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('Error occurred while resetting profit.', 'danger');
+            });
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            const alertContainer = document.getElementById('alert-container');
+            alertContainer.appendChild(alertDiv);
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+    </script>
+
+</body>
+</html>

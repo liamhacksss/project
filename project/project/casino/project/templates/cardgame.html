@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack Game</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Define styles here if needed */
+        .hidden-card {
+            /* Define styles to visually hide the dealer's first card */
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %} 
+
+    <div class="container">
+        <div id="gameArea">
+            <div id="playerArea">
+                <h2>Player's Hand</h2>
+                <div id="playerHand" class="card-container"></div>
+                <p id="playerScore">Score: </p>
+            </div>
+            <div id="dealerArea">
+                <h2>Dealer's Hand</h2>
+                <div id="dealerHand" class="card-container"></div>
+                <p id="dealerScore" style="display: none;">Score: </p>
+            </div>
+            <div id="actionButtons">
+                <div id="betInputArea">
+                    <label for="betAmount">Enter Bet Amount:</label>
+                    <input type="number" id="betAmount" name="betAmount" min="1" max="100" value="1">
+                    <button id="placeBetBtn" class="btn-custom" onclick="placeBet()">Place Bet</button>
+                </div>
+                <button id="dealBtn" class="btn-custom" style="display: none;" onclick="dealCards()">Deal</button>
+                <button id="hitBtn" class="btn-custom" style="display: none;" onclick="hit()">Hit</button>
+                <button id="standBtn" class="btn-custom" style="display: none;" onclick="stand()">Stand</button>
+            </div>
+            <div id="messageArea">
+                <p id="message"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // JavaScript code for the game functionality
+
+        var userBalance = 100; // Initial balance for demonstration
+        var betAmount = 0;
+        var playerHand = [];
+        var dealerHand = [];
+        var playerScore = 0;
+        var dealerScore = 0;
+
+        // Mapping object for card values to names
+        var cardNames = {
+            1: "Ace",
+            2: "Two",
+            3: "Three",
+            4: "Four",
+            5: "Five",
+            6: "Six",
+            7: "Seven",
+            8: "Eight",
+            9: "Nine",
+            10: "Ten",
+            11: "Jack",
+            12: "Queen",
+            13: "King"
+        };
+
+        function placeBet() {
+            betAmount = parseInt(document.getElementById("betAmount").value);
+            
+            if (betAmount > userBalance) {
+                alert("Insufficient balance!");
+                return;
+            }
+
+            // Deduct the bet amount from the user's balance
+            userBalance -= betAmount;
+
+            // Update the displayed balance (you should implement a function to update the UI)
+            updateBalanceUI();
+
+            // Hide bet input area and reveal deal button
+            document.getElementById("betInputArea").style.display = "none";
+            document.getElementById("dealBtn").style.display = "inline-block";
+        }
+
+        function dealCards() {
+            // Clear previous hands
+            playerHand = [];
+            dealerHand = [];
+            playerScore = 0;
+            dealerScore = 0;
+
+            // Deal initial cards
+            dealCard(playerHand, "playerHand");
+            dealCard(dealerHand, "dealerHand", true); // Hide dealer's first card
+
+            dealCard(playerHand, "playerHand");
+            dealCard(dealerHand, "dealerHand");
+
+            // Calculate scores
+            calculateScores();
+
+            // Display player's score
+            document.getElementById("playerScore").textContent = "Score: " + playerScore;
+
+            // Show hit and stand buttons
+            document.getElementById("hitBtn").style.display = "inline-block";
+            document.getElementById("standBtn").style.display = "inline-block";
+
+            // Hide deal button again for this round
+            document.getElementById("dealBtn").style.display = "none";
+        }
+
+        function dealCard(hand, handElementId, hideFirstCard=false) {
+            var cardValue = Math.floor(Math.random() * 13) + 1; // Generate random card value (1-13)
+            hand.push(cardValue); // Add card to hand
+
+            var cardSuit = Math.floor(Math.random() * 4); // Generate random suit index (0-3)
+            var card = { value: cardValue, suit: cardSuit };
+
+            // Display card with name instead of value
+            var cardElement = document.createElement("div");
+            cardElement.classList.add("card");
+
+            // Set the card name based on the card value
+            var cardName = cardNames[card.value];
+            cardElement.textContent = cardName; // Example: display card name
+
+            document.getElementById(handElementId).appendChild(cardElement);
+
+            if (hideFirstCard && hand.length === 1) {
+                cardElement.classList.add("hidden-card");
+            }
+        }
+
+        function calculateScores() {
+            playerScore = calculateScore(playerHand);
+            dealerScore = calculateScore(dealerHand);
+        }
+
+        function calculateScore(hand) {
+            // Calculate score, treating Aces separately
+            var score = 0;
+            var hasAce = false;
+
+            for (var i = 0; i < hand.length; i++) {
+                if (hand[i] === 1) {
+                    hasAce = true;
+                }
+                score += getCardValue(hand[i]);
+            }
+
+            // If there's an Ace, check if counting it as 11 would not bust the hand
+            if (hasAce && score + 10 <= 21) {
+                score += 10; // Count Ace as 11
+            }
+
+            return score;
+        }
+
+        function getCardValue(card) {
+            // Return card value based on Blackjack rules
+            return (card >= 10) ? 10 : card; // Face cards (Jack, Queen, King) count as 10
+        }
+
+        function hit() {
+            // Deal another card to player
+            dealCard(playerHand, "playerHand");
+            calculateScores();
+            document.getElementById("playerScore").textContent = "Score: " + playerScore;
+
+            // Check if player busts (example logic)
+            if (playerScore > 21) {
+                document.getElementById("message").textContent = "You bust! Dealer wins.";
+                endRound();
+            }
+        }
+
+        function stand() {
+            // Dealer's turn logic (example: dealer hits until score >= 17)
+            while (dealerScore < 17) {
+                dealCard(dealerHand, "dealerHand");
+                calculateScores();
+                document.getElementById("dealerScore").textContent = "Score: " + dealerScore;
+            }
+
+            // Reveal dealer's first card and show score
+            document.getElementById("dealerHand").childNodes[0].classList.remove("hidden-card");
+            document.getElementById("dealerScore").style.display = "block";
+            document.getElementById("dealerScore").textContent = "Score: " + dealerScore;
+
+            // Determine winner after dealer's turn
+            endRound();
+        }
+
+        function endRound() {
+            // Example logic to end the round and update balance based on win or lose
+            var message = "";
+
+            if (playerScore <= 21) {
+                if (playerScore > dealerScore || dealerScore > 21) {
+                    // Player wins
+                    message = "You win!";
+                    userBalance += betAmount * 1.5; // Win double the bet
+                } else if (playerScore < dealerScore) {
+                    // Dealer wins
+                    message = "Dealer wins!";
+                } else {
+                    // Tie
+                    message = "It's a tie!";
+                    userBalance += betAmount; // Return the bet amount
+                }
+            } else {
+                // Player busts
+                message = "You bust! Dealer wins.";
+                
+            }
+
+            // If both player and dealer bust (score > 21)
+            if (playerScore > 21 && dealerScore > 21) {
+                message = "Both bust! It's a tie.";
+                userBalance += betAmount; // Return the bet amount to the player
+            } 
+
+            // Update balance in UI
+            updateBalanceUI();
+
+            // Display message
+            document.getElementById("message").textContent = message;
+
+            // Hide hit and stand buttons
+            document.getElementById("hitBtn").style.display = "none";
+            document.getElementById("standBtn").style.display = "none";
+
+            // Show deal button again for next round
+            document.getElementById("dealBtn").style.display = "none";
+
+            // Reload the game after 3 seconds
+    setTimeout(function() {
+        location.reload();
+    }, 3000); // 3000 milliseconds = 3 seconds
+}
+    
+
+        function updateBalanceUI() {
+            // Update balance in UI (replace with your actual implementation)
+            console.log("Updated balance: " + userBalance);
+
+            // Send the updated balance to server to update in database
+            fetch('/update_balance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ new_balance: userBalance }) // Send the updated balance
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    console.error('Failed to update balance:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error updating balance:', error);
+            });
+        }
+    </script>
+</body>
+</html>

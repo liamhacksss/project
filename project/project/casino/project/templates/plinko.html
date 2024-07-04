@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plinko Game</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    
+    <style>
+        body {
+            background-color: #000;
+            font-family: 'Courier New', Courier, monospace;
+            color: #add8e6;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        canvas {
+            border: 3px solid #add8e6;
+            background-color: #000;
+            border-radius: 10px;
+        }
+        .control-panel {
+            text-align: center;
+        }
+        .btn-custom {
+            background-color: #add8e6;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .btn-custom:hover {
+            background-color: #000;
+            color: #add8e6;
+            border: 1px solid #add8e6;
+        }
+        .label {
+            font-weight: bold;
+        }
+        .balance-display {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+        .alert {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .alert-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .alert-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %} 
+
+    <div class="container">
+        <div class="canvas-container">
+            <canvas id="plinkoCanvas" width="800" height="600"></canvas>
+        </div>
+        <div class="control-panel">
+            <div class="form-group">
+                <label for="betAmount" class="label">Bet Amount (Max $2):</label>
+                <input type="number" id="betAmount" class="form-control d-inline-block" style="width: 100px;" max="{{ user.balance }}" min="0.01" step="0.01">
+                <button id="dropBallBtn" class="btn-custom" onclick="startGame()">Drop Ball</button>
+            </div>
+            <p class="balance-display">Current Balance: $<span id="balance">{{ user.balance }}</span></p>
+            <div id="alert-container"></div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('plinkoCanvas');
+        const ctx = canvas.getContext('2d');
+        const betAmountInput = document.getElementById('betAmount');
+        const balanceSpan = document.getElementById('balance');
+        const alertContainer = document.getElementById('alert-container');
+        const dropBallBtn = document.getElementById('dropBallBtn');
+
+        let balance = parseFloat(balanceSpan.textContent);
+
+        const pegRadius = 10;
+        const boardWidth = canvas.width;
+        const boardHeight = canvas.height;
+        const pegGap = 100;
+        const numPegRows = 8;
+        const numBuckets = 9;
+        const ballRadius = 15;
+        const gravity = 0.5;
+        const friction = 0.98;
+        const bounceFactor = 0.9;
+        const bucketMultipliers = [0.2, 0.3, 1, 1.5, 2, 1.5, 1, 0.3, 0.2];
+
+        let pegs = [];
+        let ballInPlay = false;
+
+        function reloadPage() {
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000); // Reload the page after 3 seconds
+        }
+
+        function initializePegs() {
+            pegs = [];
+            for (let row = 0; row < numPegRows; row++) {
+                pegs[row] = [];
+                let startX = (row % 2 === 0) ? pegGap / 2 : 0;
+                let numCols = Math.floor(boardWidth / pegGap);
+                if (row % 2 === 0) {
+                    numCols -= 1; // Adjust for the alternating rows
+                }
+                for (let col = 0; col <= numCols; col++) {
+                    pegs[row][col] = {
+                        x: startX + col * pegGap,
+                        y: 50 + row * (boardHeight - 100) / numPegRows,
+                        color: '#FFFF00', // Default color is yellow
+                        collisionEffect: null // Initialize collisionEffect for each peg
+                    };
+                }
+            }
+        }
+
+        function drawPegs() {
+            for (let row = 0; row < numPegRows; row++) {
+                for (let col = 0; col < pegs[row].length; col++) {
+                    ctx.beginPath();
+                    let peg = pegs[row][col];
+                    let radius = pegRadius;
+
+                    if (peg.collisionEffect && peg.collisionEffect.duration > 0) {
+                        radius += peg.collisionEffect.radiusIncrement;
+                        ctx.fillStyle = '#add8e6'; // Change color to light blue on collision
+                        peg.collisionEffect.duration--;
+                    } else {
+                        ctx.fillStyle = peg.color; // Default color is yellow
+                    }
+
+                    ctx.arc(peg.x, peg.y, radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.closePath();
+                }
+            }
+        }
+
+        function drawBuckets() {
+            const bucketWidth = boardWidth / numBuckets;
+            const bucketHeight = 100; // Increased bucket height for ball to disappear
+            const borderRadius = 10;
+
+            ctx.strokeStyle = '#000';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = '16px courier new';
+
+            function roundRect(x, y, width, height, radius) {
+                ctx.beginPath();
+                ctx.moveTo(x + radius, y);
+                ctx.lineTo(x + width - radius, y);
+                ctx.arcTo(x + width, y, x + width, y + radius, radius);
+                ctx.lineTo(x + width, y + height - radius);
+                ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
+                ctx.lineTo(x + radius, y + height);
+                ctx.arcTo(x, y + height, x, y + height - radius, radius);
+                ctx.lineTo(x, y + radius);
+                ctx.arcTo(x, y, x + radius, y, radius);
+                ctx.closePath();
+            }
+
+            for (let i = 0; i < numBuckets; i++) {
+                let x = i * bucketWidth;
+                let y = boardHeight - bucketHeight;
+
+                ctx.fillStyle = '#add8e6';
+                roundRect(x, y, bucketWidth, bucketHeight, borderRadius);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#000';
+                ctx.fillText(bucketMultipliers[i], x + bucketWidth / 2, y + bucketHeight / 2);
+            }
+        }
+
+        function updateBalance(newBalance) {
+            // Round the new balance to two decimal places
+            const roundedBalance = parseFloat(newBalance).toFixed(2);
+            balanceSpan.textContent = roundedBalance;
+
+            fetch('/update_balance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ new_balance: roundedBalance }) // Send rounded balance to server
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    showAlert('Failed to update balance.', 'danger');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function startGame() {
+            if (ballInPlay) {
+                showAlert('Wait for the current ball to finish.', 'danger');
+                return;
+            }
+
+            const betAmount = parseFloat(betAmountInput.value);
+            if (isNaN(betAmount) || betAmount <= 0 || betAmount > 2) {
+                showAlert('Please enter a valid bet amount up to $2.', 'danger');
+                return;
+            }
+
+            if (betAmount > balance) {
+                showAlert('You cannot bet more than your current balance.', 'danger');
+                return;
+            }
+
+            // Round the balance before subtracting the bet amount
+            const newBalance = (balance - betAmount).toFixed(2);
+            balance = parseFloat(newBalance);
+            updateBalance(newBalance);
+            dropBall(betAmount);
+        }
+
+        function dropBall(betAmount) {
+            ballInPlay = true;
+            dropBallBtn.disabled = true;
+            let ball = { x: Math.random() * boardWidth, y: 0, dx: 0, dy: 0 };
+            const dropInterval = setInterval(() => {
+                ball.dy += gravity;
+                ball.dy *= friction;
+                ball.dx *= friction;
+
+                ball.x += ball.dx;
+                ball.y += ball.dy;
+
+                for (let row = 0; row < numPegRows; row++) {
+                    for (let col = 0; col < pegs[row].length; col++) {
+                        let peg = pegs[row][col];
+                        if (isCollision(ball, peg)) {
+                            let angle = Math.atan2(ball.y - peg.y, ball.x - peg.x);
+                            ball.x = peg.x + (ballRadius + pegRadius + 1) * Math.cos(angle);
+                            ball.y = peg.y + (ballRadius + pegRadius + 1) * Math.sin(angle);
+                            let normalX = ball.x - peg.x;
+                            let normalY = ball.y - peg.y;
+                            let magnitude = Math.sqrt(normalX * normalX + normalY * normalY);
+                            normalX /= magnitude;
+                            normalY /= magnitude;
+                            let dotProduct = ball.dx * normalX + ball.dy * normalY;
+                            ball.dx -= 2 * dotProduct * normalX;
+                            ball.dy -= 2 * dotProduct * normalY;
+                            ball.dx *= bounceFactor;
+                            ball.dy *= bounceFactor;
+
+                            // Set collision effect for the peg
+                            peg.collisionEffect = {
+                                duration: 5, // Duration of the animation frames
+                                radiusIncrement: 5, // Increment to increase radius for animation
+                            };
+                        }
+                    }
+                }
+
+                if (ball.x <= ballRadius || ball.x >= boardWidth - ballRadius) {
+                    ball.dx = -ball.dx * bounceFactor;
+                    ball.x = (ball.x <= ballRadius) ? ballRadius : boardWidth - ballRadius;
+                }
+
+                if (ball.y >= boardHeight - ballRadius) {
+                    clearInterval(dropInterval);
+                    let bucketWidth = boardWidth / numBuckets;
+                    let bucketIndex = Math.floor(ball.x / bucketWidth);
+                    let multiplier = (bucketIndex >= 0 && bucketIndex < numBuckets) ? bucketMultipliers[bucketIndex] : 0;
+                    let winnings = betAmount * multiplier;
+                    
+                    // Round the winnings before updating the balance
+                    const newBalance = (balance + winnings).toFixed(2);
+                    balance = parseFloat(newBalance);
+                    updateBalance(newBalance);
+                    
+                    showAlert(`Ball landed in bucket ${bucketIndex + 1}. Multiplier: ${multiplier}. You win $${winnings.toFixed(2)}.`, 'success');reloadPage();
+
+                    setTimeout(() => {
+                        ballInPlay = false;
+                        dropBallBtn.disabled = false;
+                    }, 5000); // Wait 5 seconds before allowing another ball to be dropped
+
+                    drawPegs();
+                    drawBuckets();
+                    return;
+                }
+
+                drawBall(ball.x, ball.y);
+            }, 20);
+        }
+
+        function isCollision(ball, peg) {
+            let dx = ball.x - peg.x;
+            let dy = ball.y - peg.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            return distance <= ballRadius + pegRadius;
+        }
+
+        function drawBall(x, y) {
+            ctx.clearRect(0, 0, boardWidth, boardHeight);
+            drawPegs();
+            drawBuckets();
+
+            ctx.beginPath();
+            ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+            ctx.fillStyle = '#FFD700'; // Change ball color to gold
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            alertContainer.appendChild(alertDiv);
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+
+        window.onload = function() {
+            initializePegs();
+            drawPegs();
+            drawBuckets();
+        };
+    </script>
+</body>
+</html>

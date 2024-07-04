@@ -1,0 +1,21 @@
+<!-- project/templates/navbar.html -->
+<nav class="navbar">
+    <ul>
+      <li><a href="/">Home</a></li>
+      {% if not user.is_authenticated %}
+        <li><a href="/login">Sign In</a></li>
+        <li><a href="/register">Register</a></li>
+        <li><a href="/games">Games Available</a></li>
+      {% endif %}
+      {% if user.is_authenticated %}
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/logout">Logout</a></li>
+        <li><a href="/gamesCards">Play Games</a></li>
+    </ul>
+        <div class="user-info">
+            <span>Welcome: '{{ user.username }}'</span>
+            <span>Balance: ${{ user.balance }}</span>
+        </div>
+      {% endif %}
+  </nav>
+  

@@ -1,0 +1,32 @@
+<!-- project/templates/navbar.html -->
+<nav class="navbar">
+  
+  <ul>
+    <li><a href="/">Home</a></li>
+    {% if not user.is_authenticated %}
+      <li><a href="/login">Sign In</a></li>
+      <li><a href="/register">Register</a></li>
+      <li><a href="/gmes">G@mes Av@ilable</a></li>
+    {% endif %}
+    {% if user.is_authenticated %}
+      <li><a href="/dashboard">Dashboard</a></li>
+      <li><a href="/logout">Logout</a></li>
+      <li><a href="/gmesCards">Pl@y G@mes</a></li>
+      {% if current_user.username == 'admin' %}
+        <li><a href="/admin_dashboard">Admin</a></li>
+      {% endif %}{% endif %}
+    </ul>
+    <div class="navbar-logo">
+      <a href="/">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="InI Logo">
+      </a>
+    </div>
+    {% if user.is_authenticated %}
+    <div class="user-info">
+      <a href="/dashboard">
+        <span>Welcome: '{{ user.first_name }}'</span>
+        <span>Balance: ${{ user.balance }}</span>
+      </a>
+    </div>
+    {% endif %}
+</nav>

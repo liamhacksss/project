@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <style>
+    .marquee {
+            background-color: #383838;
+            color: #add8e6;
+            padding: 10px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+  </style>
+  <link rel="icon" href="{{ url_for('static', filename='logo.png') }}" type="image/x-icon">
+</head>
+<body>
+  {% include 'navbar.html' %}
+  <div class="hero">
+    <div class="hero-content">
+      <h1>Welcome to InI C@sino</h1>
+           <marquee scrollamount="20"> PayPal integrated online c@sino, fully developed by a single fullstack developer under the umbrella 'InI'</marquee>
+    </div>
+      <div class="button-container">
+        <a href="{{ url_for('register') }}"><button>Register</button></a>
+        <a href="{{ url_for('login') }}"><button>Login</button></a>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <section class="features">
+      <h2>Why Choose Us?</h2>
+      <div class="feature-box">
+        <h3>Exciting G@mes</h3>
+        <p>Experience a variety of g@mes including Plinko, CardGame, and more to come.</p>
+      </div>
+      <div class="feature-box">
+        <h3>Secure Transactions</h3>
+        <p>Your transactions are secure with our full PayPal API Integration</p>
+      </div>
+      <div class="feature-box">
+        <h3>No ID Needed!</h3>
+        <p>We dont require an ID as technically the g@mes operate using a l0ttery.</p>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

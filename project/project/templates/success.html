@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Success</title>
+  <style>
+    body {
+      font-family: 'Courier New', Courier, monospace;
+      background-color: #000;
+      color: #add8e6;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 80%;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #383838;
+      border: 3px solid #add8e6;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h1 {
+      color: #f6cef9;
+      margin-top: 20px;
+    }
+
+    p {
+      color: #add8e6;
+      margin-top: 20px;
+    }
+
+    button {
+      background-color: #add8e6;
+      color: #000;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #f6cef9;
+      color: #000;
+    }
+
+    a {
+      color: #add8e6;
+      text-decoration: none;
+      display: block;
+      margin-top: 20px;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+  <link rel="icon" href="{{ url_for('static', filename='logo.png') }}" type="image/x-icon">
+</head>
+<body>
+  <div class="container">
+    <h1>Transaction Successful</h1>
+    <p>Your transaction was completed successfully.</p>
+    <button onclick="redirectToDashboard()">Redirect to Dashboard</button>
+    <button onclick="logout()">Logout</button>
+    <a href="{{ url_for('add_money') }}">Add More Money</a>
+    <a href="{{ url_for('withdraw') }}">Withdraw Money</a>
+  </div>
+
+  <script>
+    function redirectToDashboard() {
+      setTimeout(function() {
+        window.location.href = '/dashboard';
+      });
+    }
+
+    function logout() {
+      window.location.href = '/logout';
+    }
+  </script>
+</body>
+</html>

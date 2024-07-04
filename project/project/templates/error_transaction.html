@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transaction Error</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f8f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 80%;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    p {
+      color: #555;
+      text-align: center;
+    }
+
+    button {
+      background-color: #dc3545;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #c82333;
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: none;
+      margin: 10px;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+  <link rel="icon" href="{{ url_for('static', filename='logo.png') }}" type="image/x-icon">
+</head>
+<body>
+  <div class="container">
+    <h1>Transaction Error</h1>
+    <p>There was an issue with your transaction. Please try again or contact support if the issue persists.</p>
+    <button onclick="tryAgain()">Try Again</button>
+    <button onclick="goHome()">Home</button>
+  </div>
+
+  <script>
+    function tryAgain() {
+      window.history.back();
+    }
+
+    function goHome() {
+      window.location.href = '/';
+    }
+  </script>
+</body>
+</html>
