@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 # Flask app and configuration
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'hiya'  # Replace 'your_secret_key' with a random string
+app.config['SECRET_KEY'] = 'your_secret_key'  # Replace 'your_secret_key' with a random string
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///banking.db'  # Database URI for SQLite
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Disable SQLAlchemy modification tracking
 db = SQLAlchemy(app)
@@ -22,12 +22,11 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-
 # PayPal configuration
 paypalrestsdk.configure({
     'mode': 'sandbox',  # Use 'sandbox' for testing, 'live' for production
-    'client_id': 'AUK1X_-2S_gm1mwohAwLEY8cDa-JNJzn2d5dkq_dt6De_Q3UJSbhIA_PNMB8OX6TLef7FD3OJX28yNOc',  # Replace with your PayPal client ID
-    'client_secret': 'EFekxbGHs2Q0DRuiTcOf6iKExsXeihhaTXW64X39EGXF2hM2oL-etsdql10-HHtrSNjLTWknOTlqTs8B'  # Replace with your PayPal client secret
+    'client_id': 'your_paypal_client_id',  # Replace with your PayPal client ID
+    'client_secret': 'your_paypal_client_secret'  # Replace with your PayPal client secret
 })
 
 # User model
@@ -37,7 +36,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(150), nullable=False)
     balance = db.Column(db.Float, default=0.0)
     paypal_email = db.Column(db.String(150), nullable=False)
-    first_name = db.Column(db.String(150), nullable=False)  # Add this line
+    first_name = db.Column(db.String(150), nullable=False)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -65,7 +64,6 @@ class Profit(db.Model):
 
 # Routes
 
-
 @app.route('/admin_dashboard')
 @login_required
 def admin_dashboard():
@@ -90,26 +88,26 @@ def home():
     return render_template('index.html', user=current_user)
 
 # Games route
-@app.route('/gmes')
+@app.route('/games')
 def games():
-    return render_template('gmes.html', user=current_user)
+    return render_template('games.html', user=current_user)
 
 # Game cards route
-@app.route('/gmesCards')
+@app.route('/game_cards')
 @login_required
 def game_cards():
     user = User.query.get(session['user_id'])
-    return render_template('gmesCards.html', user=user)
+    return render_template('game_cards.html', user=user)
 
 # Registration route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        first_name = request.form['first_name']  # Add this line
+        first_name = request.form['first_name']
         username = request.form['username']
         password = request.form['password']
         paypal_email = request.form['paypal_email']
-        hashed_password = generate_password_hash(password)  # Default method is 'pbkdf2:sha256'
+        hashed_password = generate_password_hash(password)
         
         # Check if user already exists
         user = User.query.filter_by(username=username).first()
@@ -117,12 +115,13 @@ def register():
             flash('Username already exists. Please choose a different username.', 'error')
             return redirect(url_for('error'))
 
-        new_user = User(first_name=first_name, username=username, password_hash=hashed_password, paypal_email=paypal_email)  # Add first_name here
+        new_user = User(first_name=first_name, username=username, password_hash=hashed_password, paypal_email=paypal_email)
         db.session.add(new_user)
         db.session.commit()
         flash('Registration successful. Please log in.', 'success')
         return redirect(url_for('login'))
     return render_template('register.html', user=current_user)
+
 # Login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -151,11 +150,6 @@ def login():
 @app.route('/error')
 def error():
     return render_template('error.html')
-
-# Error Transaction route
-@app.route('/error_transaction')
-def error_transaction():
-    return render_template('error_transaction.html')
 
 # Dashboard route
 @app.route('/dashboard')
@@ -201,7 +195,6 @@ def update_password():
     db.session.commit()
     flash('Password updated successfully.', 'success')
     return redirect(url_for('dashboard'))
-
 
 # Add Money route
 @app.route('/add_money', methods=['GET', 'POST'])
@@ -344,11 +337,11 @@ def plinko():
     return render_template('plinko.html', user=user)
 
 # Blackjack route
-@app.route('/cardgme')
+@app.route('/cardgame')
 @login_required
 def cardgame():
     user = User.query.get(session['user_id'])
-    return render_template('cardgme.html', user=user)
+    return render_template('cardgame.html', user=user)
 
 if __name__ == '__main__':
     with app.app_context():
@@ -358,4 +351,4 @@ if __name__ == '__main__':
             initial_profit = Profit(amount=0.0)
             db.session.add(initial_profit)
             db.session.commit()
-    app.run(debug=True, host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=443, ssl_context=('ssl_cert/your_domain.crt', 'ssl_cert/your_domain.key'))
