@@ -11,7 +11,7 @@ body {
 .navbar {
     background-color: #383838;
     overflow: auto;
-    height: 90px;
+    height: 900px;
     display: flex;
     justify-content: center; /* Center all items */
     align-items: center;
