@@ -11,7 +11,7 @@ body {
 .navbar {
     background-color: #383838;
     overflow: auto;
-    height: 900px;
+    height: 90px;
     display: flex;
     justify-content: center; /* Center all items */
     align-items: center;
@@ -37,7 +37,7 @@ body {
     gap: 10px; /* Space between items */
     position: absolute;
     left: 20px; /* Align to the right */
-    max-width: 10%;
+    
 }
 
 .navbar ul li {
