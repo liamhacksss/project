@@ -9,62 +9,7 @@ body {
 
 /* Add this to the existing CSS */
 /* Navbar styles */
-.navbar {
-    background-color: #383838;
-    overflow: auto;
-    height: 90px;
-    display: flex;
-    justify-content: center; /* Center all items */
-    align-items: center;
-    position: relative; /* Use relative positioning */
-    padding: 10px 20px; /* Adjust padding as needed */
-}
 
-.navbar-logo {
-    position: absolute; /* Absolute positioning */
-    left: 50%; /* Center horizontally */
-    transform: translateX(-50%); /* Offset by 50% of its own width */
-}
-
-.navbar-logo img {
-    max-height: 100px; /* Adjust height as needed */
-}
-
-.navbar ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    gap: 10px; /* Space between items */
-    position: absolute;
-    left: 20px; /* Align to the right */
-    
-}
-
-.navbar ul li {
-    margin-right: 10px;
-}
-
-.navbar ul li a {
-    display: block;
-    color: #add8e6;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    margin-top: 0px;
-}
-
-.navbar ul li a:hover {
-    background-color: #f6cef9;
-    color: #000;
-}
-
-.user-info {
-    color: #add8e6;
-    margin-right: 10px;
-    position: absolute;
-    right: 20px; /* Align to the right */
-}
 
 /* Styles for the dropdown button */
 .dropdown-btn {
