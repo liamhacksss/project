@@ -10,7 +10,7 @@ body {
 /* Navbar styles */
 .navbar {
     background-color: #383838;
-    overflow: hidden;
+    overflow: auto;
     height: 100px;
     display: flex;
     justify-content: center; /* Center all items */
@@ -18,6 +18,8 @@ body {
     position: relative; /* Use relative positioning */
     padding: 0px 20px; /* Adjust padding as needed */
 }
+
+.navbar::-webkit-scrollbar { display: none; }
 
 .navbar-logo {
     position: absolute; /* Absolute positioning */
@@ -94,8 +96,10 @@ body {
 
     .navbar ul.open {
         display: flex;
-        overflow:hidden;
+        overflow:auto;
     }
+
+    .navbar ul.open::-webkit-scrollbar { display: none; }
 
     .navbar ul li {
         width: 100%;
