@@ -16,7 +16,7 @@
       {% endif %}
     {% endif %}
   </ul>
-  {% if current_user.username !== 'admin' %}
+  {% if current_user.username != 'admin' %}
   <div class="navbar-logo">
     <a href="/">
       <img src="{{ url_for('static', filename='logo.png') }}" alt="InI Logo">
