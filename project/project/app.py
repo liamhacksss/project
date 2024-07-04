@@ -358,4 +358,4 @@ if __name__ == '__main__':
             initial_profit = Profit(amount=0.0)
             db.session.add(initial_profit)
             db.session.commit()
-    app.run(debug=True,port=0)
+    app.run(debug=True, host='0.0.0.0', port=8080)
