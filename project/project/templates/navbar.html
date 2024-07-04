@@ -1,32 +1,40 @@
-<!-- project/templates/navbar.html -->
-<nav class="navbar">
-  
-  <ul>
-    <li><a href="/">Home</a></li>
-    {% if not user.is_authenticated %}
-      <li><a href="/login">Sign In</a></li>
-      <li><a href="/register">Register</a></li>
-      <li><a href="/gmes">G@mes Av@ilable</a></li>
-    {% endif %}
-    {% if user.is_authenticated %}
-      <li><a href="/dashboard">Dashboard</a></li>
-      <li><a href="/logout">Logout</a></li>
-      <li><a href="/gmesCards">Pl@y G@mes</a></li>
-      {% if current_user.username == 'admin' %}
-        <li><a href="/admin_dashboard">Admin</a></li>
-      {% endif %}{% endif %}
+<head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="/">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="InI Logo" class="navbar-logo">
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+      {% if not user.is_authenticated %}
+        <li class="nav-item"><a class="nav-link" href="/login">Sign In</a></li>
+        <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
+        <li class="nav-item"><a class="nav-link" href="/gmes">G@mes Av@ilable</a></li>
+      {% endif %}
+      {% if user.is_authenticated %}
+        <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+        <li class="nav-item"><a class="nav-link" href="/gmesCards">Pl@y G@mes</a></li>
+        {% if current_user.username == 'admin' %}
+          <li class="nav-item"><a class="nav-link" href="/admin_dashboard">Admin</a></li>
+        {% endif %}
+      {% endif %}
     </ul>
-    <div class="navbar-logo">
-      <a href="/">
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="InI Logo">
-      </a>
-    </div>
     {% if user.is_authenticated %}
-    <div class="user-info">
-      <a href="/dashboard">
+    <div class="navbar-text">
+      <a class="nav-link" href="/dashboard">
         <span>Welcome: '{{ user.first_name }}'</span>
         <span>Balance: ${{ user.balance }}</span>
       </a>
     </div>
     {% endif %}
+  </div>
 </nav>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
