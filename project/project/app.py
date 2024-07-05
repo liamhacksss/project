@@ -233,9 +233,7 @@ def add_money():
             for link in payment.links:
                 if link.rel == "approval_url":
                     approval_url = str(link.href)
-                    return redirect(approval_url)
-            flash('Something went wrong.', 'error')
-            return redirect(url_for('error_transaction'))
+                    return redirect(url_for('success')
         else:
             flash('Payment creation failed.', 'error')
             return redirect(url_for('error_transaction'))
